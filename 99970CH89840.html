@@ -1,0 +1,173 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel – TrustDollar</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #111;
+      color: white;
+      padding: 20px;
+    }
+    h2 {
+      color: #ffd700;
+      text-align: center;
+    }
+    .box {
+      background-color: #1e1e1e;
+      border-left: 4px solid #00ffff;
+      margin: 15px 0;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #00ffff55;
+    }
+    .row { margin: 5px 0; }
+    button {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: #00ffcc;
+      border: none;
+      color: #000;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .pending { background-color: #ffaa00; color: black; padding: 2px 6px; border-radius: 4px; }
+    .success { background-color: #00ff00; color: black; padding: 2px 6px; border-radius: 4px; }
+
+    #popupAccess {
+      display: none;
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: #ff4444;
+      color: white;
+      padding: 20px 30px;
+      border-radius: 10px;
+      font-weight: bold;
+      box-shadow: 0 0 20px #ff8888;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Admin / Requests</h2>
+<div id="adminPanel"></div>
+<div id="popupAccess">⛔ Access Denied! Admins only.</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+  import {
+    getFirestore, collection, query, where, getDocs,
+    doc, updateDoc, getDoc, onSnapshot, orderBy
+  } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAswnjTVT4I_vrIShF4PDMluvWWcIwygTA",
+    authDomain: "trustdollar-f72f4.firebaseapp.com",
+    projectId: "trustdollar-f72f4",
+    storageBucket: "trustdollar-f72f4.appspot.com",
+    messagingSenderId: "217643658538",
+    appId: "1:217643658538:web:c8a9cd78467e0818aa0253"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const panel = document.getElementById("adminPanel");
+
+  const adminUID = "EA1AMnSDdOULkhbH9cFjUM96kb63"; // ✅ अपना UID डालो
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = "auth.html";
+      return;
+    }
+
+    if (user.uid !== adminUID) {
+      document.getElementById("popupAccess").style.display = "block";
+      setTimeout(() => {
+        document.getElementById("popupAccess").style.display = "none";
+        window.location.href = "auth.html";
+      }, 1500);
+      return;
+    }
+
+    // ✅ अगर सही admin है
+    loadAdminData();
+  });
+
+  function loadAdminData() {
+    const q = query(collection(db, "deposits"), orderBy("timestamp", "desc"));
+    onSnapshot(q, async (snap) => {
+      panel.innerHTML = "";
+      for (const docSnap of snap.docs) {
+        const d = docSnap.data();
+        if (d.status === "success") continue;
+
+        const userDoc = await getDoc(doc(db, "users", d.uid));
+        const userData = userDoc.exists() ? userDoc.data() : {};
+
+        const box = document.createElement("div");
+        box.className = "box";
+        box.innerHTML = `
+          <div class="row"><b>User:</b> ${userData.username || "N/A"}</div>
+          <div class="row"><b>Email:</b> ${d.email || "N/A"}</div>
+          <div class="row"><b>UID:</b> ${d.uid}</div>
+          <div class="row"><b>Amount:</b> $${d.amount}</div>
+          <div class="row"><b>Status:</b> <span class="pending">${d.status}</span></div>
+          <div class="row"><b>Wallet Before:</b> $${userData.wallet || 0}</div>
+          <button onclick="approve('${docSnap.id}', ${d.amount}, '${d.uid}')">Approve</button>
+        `;
+        panel.appendChild(box);
+      }
+    });
+  }
+
+  window.approve = async (depositId, amount, uid) => {
+    const userRef = doc(db, "users", uid);
+    const depositRef = doc(db, "deposits", depositId);
+
+    const userSnap = await getDoc(userRef);
+    if (!userSnap.exists()) return alert("User not found");
+
+    const userData = userSnap.data();
+    const currentBal = userData.wallet || 0;
+    const referredBy = userData.referredBy;
+
+    // 1. Update user wallet
+    await updateDoc(userRef, { wallet: currentBal + amount });
+
+    // 2. Mark deposit as success
+    await updateDoc(depositRef, { status: "success" });
+
+    // 3. Referral logic
+    const refQuery = query(
+      collection(db, "referral_pending"),
+      where("downline", "==", uid),
+      where("depositId", "==", depositId)
+    );
+
+    const refSnap = await getDocs(refQuery);
+    if (!refSnap.empty) {
+      const refDoc = refSnap.docs[0];
+      const refData = refDoc.data();
+      const uplineRef = doc(db, "users", refData.upline);
+      const uplineSnap = await getDoc(uplineRef);
+      if (uplineSnap.exists()) {
+        const uplineData = uplineSnap.data();
+        const uplineWallet = uplineData.wallet || 0;
+        await updateDoc(uplineRef, { wallet: uplineWallet + refData.amount });
+        await updateDoc(refDoc.ref, { status: "done" });
+      }
+    }
+
+    alert("Approved successfully!");
+  };
+</script>
+</body>
+</html>

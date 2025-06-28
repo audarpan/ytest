@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TrustDollar – BTC Mining</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0a0a0a;
+      color: #fff;
+      padding-bottom: 100px;
+      overflow-x: hidden;
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #00ffff;
+      margin-top: clamp(20px, 5vw, 40px);
+      text-shadow: 0 0 10px #00ffff88;
+      font-size: clamp(22px, 5vw, 34px);
+    }
+
+    .section {
+      width: 90%;
+      max-width: 950px;
+      margin: 30px auto;
+      padding: clamp(16px, 4vw, 30px);
+      background: #1a1a1a;
+      border-radius: 20px;
+      border: 1px solid #1047db;
+      box-shadow: 0 0 20px #00fff740;
+      position: relative;
+    }
+
+    .glow {
+      color: #00ffcc;
+      font-weight: bold;
+      text-shadow: 0 0 8px #00ffccaa;
+    }
+
+    .section p {
+      font-size: clamp(14px, 4vw, 17px);
+      line-height: 1.7;
+      color: #ccc;
+      text-align: center;
+    }
+
+    .scene {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      gap: 14px;
+    }
+
+    .miner {
+      width: 90px;
+      height: 90px;
+      background: #111;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #00ffff80;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .fan {
+      width: 80%;
+      height: 80%;
+      background: radial-gradient(#00ffff 40%, transparent 41%);
+      border-radius: 50%;
+      animation: rotate 2s linear infinite;
+    }
+
+    @keyframes rotate {
+      100% { transform: rotate(360deg); }
+    }
+
+    .coin {
+      width: 24px;
+      height: 24px;
+      background: gold;
+      border-radius: 50%;
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: drop 2s linear infinite;
+    }
+
+    @keyframes drop {
+      0% { top: -30px; opacity: 0; }
+      20% { opacity: 1; }
+      80% { top: 70px; opacity: 1; }
+      100% { top: 80px; opacity: 0; }
+    }
+
+    .chart {
+      width: 160px;
+      height: 80px;
+      background: linear-gradient(to right, #00ffff22, #00ffff11);
+      border-radius: 10px;
+      padding: 6px;
+      display: flex;
+      align-items: flex-end;
+      gap: 5px;
+      box-shadow: 0 0 10px #00ffff33;
+    }
+
+    .bar {
+      flex: 1;
+      background: #00ffff;
+      border-radius: 5px;
+      height: 40%;
+      animation: fluctuate 2s ease-in-out infinite alternate;
+    }
+
+    .bar:nth-child(2) { animation-delay: 0.3s; }
+    .bar:nth-child(3) { animation-delay: 0.6s; }
+    .bar:nth-child(4) { animation-delay: 0.9s; }
+
+    @keyframes fluctuate {
+      0% { height: 30%; }
+      100% { height: 80%; }
+    }
+
+    .device {
+      width: 110px;
+      height: 60px;
+      background: #00aaff22;
+      border-radius: 12px;
+      box-shadow: inset 0 0 10px #00ffff44;
+    }
+
+    .cta {
+      display: inline-block;
+      margin-top: 20px;
+      background: #00ffff;
+      color: #000;
+      font-weight: bold;
+      padding: 14px 28px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 16px;
+      box-shadow: 0 0 15px #00ffff90;
+      transition: transform 0.2s ease;
+    }
+
+    .cta:hover {
+      transform: scale(1.05);
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #000;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      border-top: 1px solid #222;
+      z-index: 999;
+    }
+
+    .bottom-nav a {
+      text-align: center;
+      color: #ccc;
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    .bottom-nav i {
+      font-size: 20px;
+      display: block;
+      margin: 0 auto 5px;
+      color: inherit;
+    }
+
+    .bottom-nav .active {
+      color: #ffd700;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Mining Animation Section -->
+<div class="section">
+  <div class="scene">
+    <div class="miner">
+      <div class="fan"></div>
+      <div class="coin"></div>
+    </div>
+    <div class="chart">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+    <div class="device"></div>
+  </div>
+  <h2></h2>
+  <p><span class="glow">TrustDollar</span>  <span class="glow">deposit USD</span> </p>
+</div>
+
+<!-- Mining Process Section -->
+<div class="section">
+  <h2>Mining Process</h2>
+  <p>Click <span class="glow">Start Mining</span> lets you mine USDT without any setup. Just and start earning BTC automatically using our secure infrastructure</p>
+</div>
+
+<!-- Costs and Earnings -->
+<div class="section">
+  <h2>Costs and Earnings</h2>
+  <p>
+    - Minimum deposit: <span class="glow">$10</span><br>
+    - Daily maintenance fee: <span class="glow">2%</span><br>
+    - Daily profit range: <span class="glow">4% – 7%</span><br>
+    - Withdraw your earnings anytime securely
+  </p>
+</div>
+
+<!-- CTA Button -->
+<div class="section" style="text-align: center;">
+  <h2>Start Earning Bitcoin Now</h2>
+  <a href="start.html" class="cta">Start Mining</a>
+</div>
+
+<!-- Bottom Navigation Bar -->
+<div class="bottom-nav">
+  <a href="index.html" class="active"><i class="fa-solid fa-house"></i><span>Home</span></a>
+  <a href="start.html"><i class="fa-solid fa-play"></i><span>Mining</span></a>
+  <a href="promotion.html"><i class="fa-solid fa-percent"></i><span>Promo</span></a>
+  <a href="wallet.html"><i class="fa-solid fa-wallet"></i><span>Wallet</span></a>
+  <a href="account.html"><i class="fa-solid fa-user"></i><span>Account</span></a>
+</div>
+
+<!-- Firebase v9 SDK -->
+<script type="module">
+  // Import Firebase SDK v9 modules
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAswnjTVT4I_vrIShF4PDMluvWWcIwygTA",
+    authDomain: "trustdollar-f72f4.firebaseapp.com",
+    projectId: "trustdollar-f72f4",
+    storageBucket: "trustdollar-f72f4.appspot.com",
+    messagingSenderId: "217643658538",
+    appId: "1:217643658538:web:c8a9cd78467e0818aa0253"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  onAuthStateChanged(auth, user => {
+    if (!user) {
+      window.location.href = "auth.html";
+    }
+  });
+</script>
+
+</body>
+</html>
