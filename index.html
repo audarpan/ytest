@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -116,6 +116,7 @@
     .popup.success { background: rgba(0,128,0,0.85); }
     .popup.error { background: rgba(139,0,0,0.85); }
 
+    /* Scanner */
     .scanner-popup {
       position: fixed;
       top:0; left:0;
@@ -141,7 +142,8 @@
       left:0;
       width:100%;
       height:3px;
-      background:red;
+      background: linear-gradient(90deg, red, gold, red);
+      box-shadow: 0 0 15px red, 0 0 25px gold;
       animation: scanMove 2s linear infinite;
     }
     @keyframes scanMove {
@@ -158,6 +160,26 @@
       background:red;
       color:#fff;
       font-weight:bold;
+    }
+
+    /* QR Code Box */
+    #qrBox {
+      margin-top: 20px;
+      padding: 12px;
+      border: 2px dashed rgba(255,215,0,0.6);
+      border-radius: 12px;
+      background: rgba(0,0,0,0.5);
+    }
+    .qr-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 10px auto;
+      width: 160px;
+      height: 160px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 10px;
     }
 
     @media (max-width: 420px) {
@@ -182,7 +204,9 @@
 
     <div id="qrBox">
       <h3 style="color:gold; margin:10px 0;">Your QR Code</h3>
-      <div id="qrcode"></div>
+      <div class="qr-wrapper">
+        <div id="qrcode"></div>
+      </div>
       <p style="font-size:12px; color:#fff;">Scan this QR to auto-fill your Email</p>
     </div>
 
